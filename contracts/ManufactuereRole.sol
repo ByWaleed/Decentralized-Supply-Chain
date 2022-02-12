@@ -24,4 +24,15 @@ contract ManufacturerRole {
         manufacturers.add(account);
         emit ManufacturerAdded(account);
     }
+
+    // Define an internal function '_removeManufactueres' to remove this role, called by 'removeManufactueres'
+    function _removeManufactueres(address account) internal {
+        manufacturers.remove(account);
+        emit ManufacturerRemoved(account);
+    }
+
+    // Define a function 'isManufacturer' to check this role
+    function isManufacturer(address account) public view returns (bool) {
+        return manufacturers.has(account);
+    }
 }
