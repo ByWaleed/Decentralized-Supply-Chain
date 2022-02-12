@@ -13,4 +13,10 @@ contract ManufactuereRole {
 
     // Define a struct 'manufacturers' by inheriting from 'Roles' library, struct Role
     Roles.Role private manufacturers;
+
+    // Define an internal function '_addFarmer' to add this role, called by 'addFarmer'
+    function _addManufactuere(address account) internal {
+        manufacturers.add(account);
+        emit ManufacturerAdded(account);
+    }
 }
