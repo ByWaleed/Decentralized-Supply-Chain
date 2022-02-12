@@ -13,4 +13,23 @@ contract DistributorRole {
 
     // Define a struct 'distributors' by inheriting from 'Roles' library, struct Role
     Roles.Role private distributors;
+
+    // In the constructor make the address that deploys this contract the 1st distributor
+    constructor() {
+        _addDistributor(msg.sender);
+    }
+
+    // Define an internal function '_addDistributor' to add this role, called by 'addDistributor'
+    function _addDistributor(address account) internal {
+        distributors.add(account);
+
+        emit DistributorAdded(account);
+    }
+
+    // Define an internal function '_removeDistributor' to remove this role, called by 'removeDistributor'
+    function _removeDistributor(address account) internal {
+        distributors.remove(account);
+
+        emit DistributorRemoved(account);
+    }
 }
