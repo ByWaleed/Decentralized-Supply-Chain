@@ -26,7 +26,7 @@ contract ManufacturerRole {
     }
 
     // Define an internal function '_removeManufactueres' to remove this role, called by 'removeManufactueres'
-    function _removeManufactueres(address account) internal {
+    function _removeManufacturer(address account) internal {
         manufacturers.remove(account);
         emit ManufacturerRemoved(account);
     }
@@ -34,5 +34,21 @@ contract ManufacturerRole {
     // Define a function 'isManufacturer' to check this role
     function isManufacturer(address account) public view returns (bool) {
         return manufacturers.has(account);
+    }
+
+    // Define a modifier that checks to see if msg.sender has the appropriate role
+    modifier onlyManufacturer() {
+        require(isManufacturer(msg.sender), "Sender doesn't have the manufacturer role.");
+        _;
+    }
+
+    // Define a function 'addManufacturer' that adds this role
+    function addManufacturer(address account) public onlyManufacturer {
+        _addManufacturer(account);
+    }
+
+    // Define a function 'renounceManufacturer' to renounce this role
+    function renounceManufacturer() public {
+        _removeManufacturer(msg.sender);
     }
 }
