@@ -32,4 +32,28 @@ contract DistributorRole {
 
         emit DistributorRemoved(account);
     }
+
+    // Define a function 'isDistributor' to check this role
+    function isDistributor(address account) public view returns (bool) {
+        return distributors.has(account);
+    }
+
+    // Define a modifier that checks to see if msg.sender has the appropriate role
+    modifier onlyDistributor() {
+        require(
+            isDistributor(msg.sender),
+            "Sender doesn't have the distributor role."
+        );
+        _;
+    }
+
+    // Define a function 'addDistributor' that adds this role
+    function addDistributor(address account) public onlyDistributor {
+        _addDistributor(account);
+    }
+
+    // Define a function 'renounceDistributor' to renounce this role
+    function renounceDistributor() public {
+        _removeDistributor(msg.sender);
+    }
 }
