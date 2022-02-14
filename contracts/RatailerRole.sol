@@ -1,0 +1,35 @@
+pragma solidity >=0.4.22 <0.9.0;
+
+// Import the library 'Roles'
+import "./Roles.sol";
+
+// Define a contract 'RetailerRole' to manage this role - add, remove, check
+contract RetailerRole {
+    using Roles for Roles.Role;
+
+    // Define 2 events, one for Adding, and other for Removing
+    event RetailerAdded(address indexed account);
+    event RetailerRemoved(address indexed account);
+
+    // Define a struct 'retailers' by inheriting from 'Roles' library, struct Role
+    Roles.Role private retailers;
+
+    // In the constructor make the address that deploys this contract the 1st retailer
+    constructor() {
+        _addRetailer(msg.sender);
+    }
+
+    // Define an internal function '_addRetailer' to add this role, called by 'addRetailer'
+    function _addRetailer(address account) internal {
+        retailers.add(account);
+
+        emit RetailerAdded(account);
+    }
+
+    // Define an internal function '_removeRetailer' to remove this role, called by 'removeRetailer'
+    function _removeRetailer(address account) internal {
+        retailers.remove(account);
+
+        emit RetailerRemoved(account);
+    }
+}
