@@ -106,7 +106,7 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit Packed(_upc);
     }
 
-    // Define a function 'sellItem' that allows a farmer to mark an item 'ForSale'
+    // Define a function 'sellItem' that allows a manufacturer to mark an item 'ForSale'
     // Call modifier to check if upc has passed previous supply chain stage
     // Call modifier to verify caller of this function
     function sellItem(uint256 _upc, uint256 _price)
@@ -123,10 +123,53 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit ForSale(_upc);
     }
 
+    // Define a function 'buyItem' that allows the disributor to mark an item 'Sold'
+    // Use the above defined modifiers to check if the item is available for sale, if the buyer has paid enough,
+    // and any excess ether sent is refunded back to the buyer
+    // Call modifier to check if upc has passed previous supply chain stage
+    // Call modifer to check if buyer has paid enough
+    // Call modifer to send any excess ether back to buyer
+    function buyItem(uint256 _upc)
+        public
+        payable
+        forSale(_upc)
+        paidEnough(items[_upc].productPrice)
+        checkValue(_upc)
+        onlyDistributor
+    {
+        // Update the appropriate fields - ownerID, distributorID, itemState
+        items[_upc].ownerID = msg.sender;
+        items[_upc].itemState = State.Sold;
+        items[_upc].distributorID = msg.sender;
+
+        // Transfer money to manufacturer
+        uint256 price = items[_upc].productPrice;
+        payable(items[_upc].originManufacturerID).transfer(price);
+
+        // emit the appropriate event
+        emit Sold(_upc);
+    }
 
     /*
      * Modifiers
     */
+
+    // Define a modifier that checks if the paid amount is sufficient to cover the price
+    modifier paidEnough(uint256 _price) {
+        require(
+            msg.value >= _price,
+            "Paid amount is insufficient for the price."
+        );
+        _;
+    }
+
+    // Define a modifier that checks the price and refunds the remaining balance
+    modifier checkValue(uint256 _upc) {
+        _;
+        uint256 _price = items[_upc].productPrice;
+        uint256 amountToReturn = msg.value - _price;
+        payable(items[_upc].consumerID).transfer(amountToReturn);
+    }
 
     // Define a modifer that verifies the Caller
     modifier verifyCaller(address _address) {
