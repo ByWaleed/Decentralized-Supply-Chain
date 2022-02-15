@@ -1,10 +1,10 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 // Import the library 'Roles'
-import "./Roles.sol";w
+import "./Roles.sol";
 
 // Define a contract 'DistributorRole' to manage this role - add, remove, check
-contract DistributorRole {
+contract Distributor {
     using Roles for Roles.Role;
 
     // Define 2 events, one for Adding, and other for Removing
