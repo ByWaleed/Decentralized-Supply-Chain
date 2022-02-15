@@ -150,6 +150,23 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit Sold(_upc);
     }
 
+    // Define a function 'shipItem' that allows the distributor to mark an item 'Shipped'
+    // Use the above modifers to check if the item is sold
+    // Call modifier to check if upc has passed previous supply chain stage
+    // Call modifier to verify caller of this function
+    function shipItem(uint256 _upc)
+        public
+        sold(_upc)
+        verifyCaller(msg.sender)
+        onlyDistributor
+    {
+        // Update the appropriate fields
+        items[_upc].itemState = State.Shipped;
+
+        // Emit the appropriate event
+        emit Shipped(_upc);
+    }
+
     /*
      * Modifiers
     */
