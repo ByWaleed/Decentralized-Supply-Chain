@@ -89,4 +89,63 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         // Emit the appropriate event
         emit Manufactured(_upc);
     }
+
+    /*
+     * Modifiers
+    */
+    modifier manufactured(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.Manufactured,
+            "Product hasn't been harvested."
+        );
+        _;
+    }
+
+    modifier packed(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.Packed,
+            "Product hasn't been packed."
+        );
+        _;
+    }
+
+    modifier forSale(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.ForSale,
+            "Product isn't for sale yet."
+        );
+        _;
+    }
+
+    modifier sold(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.Sold,
+            "Product hasn't been sold."
+        );
+        _;
+    }
+
+    modifier shipped(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.Shipped,
+            "Product hasn't been shipped."
+        );
+        _;
+    }
+
+    modifier received(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.Received,
+            "Product hasn't been received."
+        );
+        _;
+    }
+
+    modifier purchased(uint256 _upc) {
+        require(
+            items[_upc].itemState == State.Purchased,
+            "Product hasn't been purchased."
+        );
+        _;
+    }
 }
