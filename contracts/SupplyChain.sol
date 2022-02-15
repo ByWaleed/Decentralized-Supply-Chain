@@ -106,6 +106,24 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit Packed(_upc);
     }
 
+    // Define a function 'sellItem' that allows a farmer to mark an item 'ForSale'
+    // Call modifier to check if upc has passed previous supply chain stage
+    // Call modifier to verify caller of this function
+    function sellItem(uint256 _upc, uint256 _price)
+        public
+        packed(_upc)
+        verifyCaller(msg.sender)
+        onlyManufacturer
+    {
+        // Update the appropriate fields
+        items[_upc].itemState = State.ForSale;
+        items[_upc].productPrice = _price;
+
+        // Emit the appropriate event
+        emit ForSale(_upc);
+    }
+
+
     /*
      * Modifiers
     */
