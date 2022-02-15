@@ -1,7 +1,8 @@
-pragma solidity ^0.8.3;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.4.22 <0.9.0;
 
-/// Provides basic authorization control
-contract Item {
+// Provides basic authorization control
+contract Ownable {
     address private origOwner;
 
     // Define an Event
