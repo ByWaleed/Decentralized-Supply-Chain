@@ -90,13 +90,39 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit Manufactured(_upc);
     }
 
+    // Define a function 'packItem' that allows a manufacturer to mark an item 'Packed'
+    // Call modifier to check if upc has passed previous supply chain stage
+    // Call modifier to verify caller of this function
+    function packItem(uint256 _upc)
+        public
+        manufactured(_upc)
+        verifyCaller(msg.sender)
+        onlyManufacturer
+    {
+        // Update the appropriate fields
+        items[_upc].itemState = State.Packed;
+
+        // Emit the appropriate event
+        emit Packed(_upc);
+    }
+
     /*
      * Modifiers
     */
+
+    // Define a modifer that verifies the Caller
+    modifier verifyCaller(address _address) {
+        require(
+            msg.sender == _address,
+            "Sender is not the caller of the contract."
+        );
+        _;
+    }
+
     modifier manufactured(uint256 _upc) {
         require(
             items[_upc].itemState == State.Manufactured,
-            "Product hasn't been harvested."
+            "Product hasn't been manufactured."
         );
         _;
     }
