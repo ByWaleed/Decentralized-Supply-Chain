@@ -195,6 +195,37 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit Purchased(_upc);
     }
 
+    // Define a function 'fetchItemBuffer' that fetches the data
+    function fetchItemBuffer(uint256 _upc)
+        public
+        view
+        returns (
+            uint256 itemUPC,
+            uint256 productPrice,
+            uint256 itemState,
+            address distributorID,
+            address retailerID,
+            address consumerID
+        )
+    {
+        // Assign values to the 9 parameters
+        itemUPC = items[_upc].upc;
+        productPrice = items[_upc].productPrice;
+        itemState = uint256(items[_upc].itemState);
+        distributorID = items[_upc].distributorID;
+        retailerID = items[_upc].retailerID;
+        consumerID = items[_upc].consumerID;
+
+        return (
+            itemUPC,
+            productPrice,
+            itemState,
+            distributorID,
+            retailerID,
+            consumerID
+        );
+    }
+
     /*
      * Modifiers
     */
