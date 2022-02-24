@@ -52,7 +52,6 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
     event Purchased(uint256 upc);
 
     // In the constructor set 'owner' to the address that instantiated the contract
-    // and set 'sku' to 1
     // and set 'upc' to 1
     constructor() payable {
         upc = 1;
