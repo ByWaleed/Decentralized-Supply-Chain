@@ -37,7 +37,20 @@ App = {
             console.log("getMetaskID:", res);
             App.metamaskAccountID = res[0];
         });
-    }
+    },
+
+    initSupplyChain: function () {
+        // Source the truffle compiled smart contracts
+        var jsonSupplyChain = "../../build/contracts/SupplyChain.json";
+
+        // JSONfy the smart contracts
+        $.getJSON(jsonSupplyChain, function (data) {
+            console.log("data", data);
+            var SupplyChainArtifact = data;
+            App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
+            App.contracts.SupplyChain.setProvider(App.web3Provider);
+        });
+    },
 };
 
 $(function () {
