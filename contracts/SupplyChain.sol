@@ -181,6 +181,20 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         emit Received(_upc);
     }
 
+    // Define a function 'purchaseItem' that allows the consumer to mark an item 'Purchased'
+    // Use the above modifiers to check if the item is received
+    // Call modifier to check if upc has passed previous supply chain stage
+    // Access Control List enforced by calling Smart Contract / DApp
+    function purchaseItem(uint256 _upc) public received(_upc) onlyConsumer {
+        // Update the appropriate fields - ownerID, consumerID, itemState
+        items[_upc].ownerID = msg.sender;
+        items[_upc].itemState = State.Purchased;
+        items[_upc].consumerID = msg.sender;
+
+        // Emit the appropriate event
+        emit Purchased(_upc);
+    }
+
     /*
      * Modifiers
     */
