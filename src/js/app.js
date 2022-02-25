@@ -50,6 +50,21 @@ App = {
             App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
             App.contracts.SupplyChain.setProvider(App.web3Provider);
         });
+
+        App.fetchItemBuffer();
+    },
+
+    fetchItemBuffer: function () {
+        App.contracts.SupplyChain.deployed()
+            .then(function (instance) {
+                return instance.fetchItemBuffer(App.upc);
+            })
+            .then(function (result) {
+                console.log("fetchItemBuffer", result);
+            })
+            .catch(function (err) {
+                console.log(err.message);
+            });
     },
 };
 
