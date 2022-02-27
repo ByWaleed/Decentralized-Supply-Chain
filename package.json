@@ -24,6 +24,7 @@
     "web3": "^1.7.0"
   },
   "devDependencies": {
-    "lite-server": "^2.6.1"
+    "lite-server": "^2.6.1",
+    "ganache-cli": "^6.12.2"
   }
 }
