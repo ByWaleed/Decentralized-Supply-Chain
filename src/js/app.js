@@ -1,4 +1,19 @@
 App = {
+    web3Provider: null,
+    contracts: {},
+    emptyAddress: "0x0000000000000000000000000000000000000000",
+    upc: 0,
+    metamaskAccountID: "0x0000000000000000000000000000000000000000",
+    ownerID: "0x0000000000000000000000000000000000000000",
+    originManufacturerID: "0x0000000000000000000000000000000000000000",
+    originManufacturerName: null,
+    originManufacturerInformation: null,
+    productNotes: null,
+    productPrice: 0,
+    distributorID: "0x0000000000000000000000000000000000000000",
+    retailerID: "0x0000000000000000000000000000000000000000",
+    consumerID: "0x0000000000000000000000000000000000000000",
+
     init: async function () {
         return await App.initWeb3();
     },
@@ -31,7 +46,7 @@ App = {
         // Retrieving accounts
         web3.eth.getAccounts(function (err, res) {
             if (err) {
-                console.log("Error:", err);
+                console.error("Error:", err);
                 return;
             }
             console.log("getMetaskID:", res);
@@ -50,20 +65,24 @@ App = {
             App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
             App.contracts.SupplyChain.setProvider(App.web3Provider);
         });
-
-        App.fetchItemBuffer();
     },
 
-    fetchItemBuffer: function () {
+    manufactureItem: function () {
         App.contracts.SupplyChain.deployed()
             .then(function (instance) {
-                return instance.fetchItemBuffer(App.upc);
+                return instance.manufactureItem(
+                    App.upc,
+                    App.metamaskAccountID,
+                    "UoH", // App.originManufacturerName,
+                    "Waleed @ University of Huddersfield", // App.originManufacturerInformation,
+                    { from: App.metamaskAccountID }
+                );
             })
             .then(function (result) {
-                console.log("fetchItemBuffer", result);
+                console.log("manufactureItem", result);
             })
             .catch(function (err) {
-                console.log(err.message);
+                console.error(err.message);
             });
     },
 };
@@ -71,5 +90,7 @@ App = {
 $(function () {
     $(window).load(function () {
         App.init();
+        App.initSupplyChain();
+        // App.manufactureItem();
     });
 });
