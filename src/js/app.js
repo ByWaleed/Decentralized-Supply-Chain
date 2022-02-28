@@ -15,9 +15,13 @@ App = {
     consumerID: "0x0000000000000000000000000000000000000000",
 
     init: async function () {
-        return await App.initWeb3();
+        // App.readForm();
+        return await App.initWeb3(); // Setup blockchain
     },
 
+    /**
+     * Setup functions
+     */
     initWeb3: async function () {
         // Find or Inject Web3 Provider
         if (window.ethereum) {
@@ -38,6 +42,7 @@ App = {
         }
 
         App.getMetaskAccountID();
+        return App.initSupplyChain();
     },
 
     getMetaskAccountID: function () {
@@ -64,9 +69,14 @@ App = {
             var SupplyChainArtifact = data;
             App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
             App.contracts.SupplyChain.setProvider(App.web3Provider);
+
+            App.fetchEvents();
         });
     },
 
+    /**
+     * Supply Chain interaction functions
+     */
     manufactureItem: function () {
         App.contracts.SupplyChain.deployed()
             .then(function (instance) {
@@ -85,12 +95,37 @@ App = {
                 console.error(err.message);
             });
     },
+
+    fetchEvents: function () {
+        if (typeof App.contracts.SupplyChain.currentProvider.sendAsync !== "function") {
+            App.contracts.SupplyChain.currentProvider.sendAsync = function () {
+                return App.contracts.SupplyChain.currentProvider.send.apply(
+                    App.contracts.SupplyChain.currentProvider,
+                    arguments
+                );
+            };
+        }
+
+        App.contracts.SupplyChain.deployed()
+            .then(function (instance) {
+                console.log("Instance: " + instance);
+                var events = instance.allEvents(function (err, log) {
+                    console.log(log);
+                    if (!err)
+                        $("#ftc-events").append(
+                            "<li>" + log.event + " - " + log.transactionHash + "</li>"
+                        );
+                });
+            })
+            .catch(function (err) {
+                console.error(err.message);
+            });
+    }
 };
 
 $(function () {
     $(window).load(function () {
         App.init();
-        App.initSupplyChain();
         // App.manufactureItem();
     });
 });
