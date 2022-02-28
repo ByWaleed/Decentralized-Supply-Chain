@@ -15,13 +15,61 @@ App = {
     consumerID: "0x0000000000000000000000000000000000000000",
 
     init: async function () {
-        // App.readForm();
+        App.readForm();
         return await App.initWeb3(); // Setup blockchain
     },
 
     /**
-     * Setup functions
+     * UI Setup Functions
      */
+    readForm: function () {
+        App.sku = $("#sku").val();
+        App.ownerID = "0x45C0340627654a06A19C0F8f49B8C061A51b5739";
+
+        App.originManufacturerID = "0x45C0340627654a06A19C0F8f49B8C061A51b5739";
+        App.originManufacturerName = "UoH";
+        App.originManufacturerInformation = "Waleed Islam @ University of Huddersfield";
+        App.productPrice = "0.1"; // Eth
+
+        App.distributorID = "";
+        App.retailerID = "";
+        App.consumerID = "";
+
+        console.log(
+            App.sku,
+            App.ownerID,
+            App.originManufacturerID,
+            App.originManufacturerName,
+            App.originManufacturerInformation,
+            App.productPrice,
+            App.distributorID,
+            App.retailerID,
+            App.consumerID
+        );
+    },
+
+    bindEvents: function () {
+        $(button).on("click", App.handleButtonClick);
+    },
+
+    handleButtonClick: async function (event) {
+        event.preventDefault();
+
+        App.getMetaskAccountID();
+
+        var operation = $(event.target).data("id");
+        console.log("operation", operation);
+
+        switch (operation) {
+            case 'manufacture':
+                return await App.manufactureItem(event);
+        }
+    },
+
+    /**
+     * Blockchain Setup Functions
+     */
+
     initWeb3: async function () {
         // Find or Inject Web3 Provider
         if (window.ethereum) {
@@ -72,10 +120,12 @@ App = {
 
             App.fetchEvents();
         });
+
+        return App.bindEvents();
     },
 
     /**
-     * Supply Chain interaction functions
+     * Supply Chain Interaction Functions
      */
     manufactureItem: function () {
         App.contracts.SupplyChain.deployed()
@@ -83,8 +133,8 @@ App = {
                 return instance.manufactureItem(
                     App.upc,
                     App.metamaskAccountID,
-                    "UoH", // App.originManufacturerName,
-                    "Waleed @ University of Huddersfield", // App.originManufacturerInformation,
+                    App.originManufacturerName,
+                    App.originManufacturerInformation,
                     { from: App.metamaskAccountID }
                 );
             })
