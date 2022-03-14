@@ -99,7 +99,7 @@ App = {
             App.contracts.SupplyChain = TruffleContract(Artifact);
             App.contracts.SupplyChain.setProvider(App.web3Provider);
 
-            App.fetchEvents();
+            App.syncAllEvents();
         });
 
         return App.bindEvents();
@@ -127,7 +127,7 @@ App = {
             });
     },
 
-    fetchEvents: function () {
+    syncAllEvents: function () {
         if (typeof App.contracts.SupplyChain.currentProvider.sendAsync !== "function") {
             App.contracts.SupplyChain.currentProvider.sendAsync = function () {
                 return App.contracts.SupplyChain.currentProvider.send.apply(
