@@ -1,18 +1,22 @@
 App = {
     web3Provider: null,
     contracts: {},
-    emptyAddress: "0x0000000000000000000000000000000000000000",
+
     upc: 0,
-    metamaskAccountID: "0x0000000000000000000000000000000000000000",
-    ownerID: "0x0000000000000000000000000000000000000000",
-    originManufacturerID: "0x0000000000000000000000000000000000000000",
-    originManufacturerName: null,
-    originManufacturerInformation: null,
     productNotes: null,
     productPrice: 0,
+
+    emptyAddress: "0x0000000000000000000000000000000000000000",
+    metamaskAccountID: "0x0000000000000000000000000000000000000000",
+
+    ownerID: "0x0000000000000000000000000000000000000000",
+    originManufacturerID: "0x0000000000000000000000000000000000000000",
     distributorID: "0x0000000000000000000000000000000000000000",
     retailerID: "0x0000000000000000000000000000000000000000",
     consumerID: "0x0000000000000000000000000000000000000000",
+
+    originManufacturerName: null,
+    originManufacturerInformation: null,
 
     init: async function () {
         App.readForm();
@@ -34,18 +38,6 @@ App = {
         App.distributorID = "";
         App.retailerID = "";
         App.consumerID = "";
-
-        console.log(
-            App.sku,
-            App.ownerID,
-            App.originManufacturerID,
-            App.originManufacturerName,
-            App.originManufacturerInformation,
-            App.productPrice,
-            App.distributorID,
-            App.retailerID,
-            App.consumerID
-        );
     },
 
     bindEvents: function () {
@@ -58,7 +50,6 @@ App = {
         App.getMetaskAccountID();
 
         var operation = $(event.target).data("id");
-        console.log("operation", operation);
 
         switch (operation) {
             case 'manufacture':
@@ -71,21 +62,16 @@ App = {
      */
 
     initWeb3: async function () {
-        // Find or Inject Web3 Provider
         if (window.ethereum) {
             App.web3Provider = window.ethereum;
             try {
-                await window.ethereum.enable(); // Request account access
+                await window.ethereum.enable();
             } catch (error) {
-                // User denied account access...
                 console.error("User denied account access");
             }
-        }
-        // Legacy dapp browsers...
-        else if (window.web3) {
+        } else if (window.web3) {
             App.web3Provider = window.web3.currentProvider;
-        } // If no injected web3 instance is detected, fall back to Ganache
-        else {
+        } else {
             App.web3Provider = new Web3.providers.HttpProvider("http://localhost:8545");
         }
 
@@ -96,26 +82,21 @@ App = {
     getMetaskAccountID: function () {
         web3 = new Web3(App.web3Provider);
 
-        // Retrieving accounts
         web3.eth.getAccounts(function (err, res) {
             if (err) {
                 console.error("Error:", err);
                 return;
             }
-            console.log("getMetaskID:", res);
             App.metamaskAccountID = res[0];
         });
     },
 
     initSupplyChain: function () {
-        // Source the truffle compiled smart contracts
-        var jsonSupplyChain = "../../build/contracts/SupplyChain.json";
+        var compiledContract = "../../build/contracts/SupplyChain.json";
 
-        // JSONfy the smart contracts
-        $.getJSON(jsonSupplyChain, function (data) {
-            console.log("data", data);
-            var SupplyChainArtifact = data;
-            App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
+        $.getJSON(compiledContract, function (data) {
+            var Artifact = data;
+            App.contracts.SupplyChain = TruffleContract(Artifact);
             App.contracts.SupplyChain.setProvider(App.web3Provider);
 
             App.fetchEvents();
@@ -139,7 +120,7 @@ App = {
                 );
             })
             .then(function (result) {
-                console.log("manufactureItem", result);
+                console.info(result.logs[0].event);
             })
             .catch(function (err) {
                 console.error(err.message);
@@ -158,9 +139,7 @@ App = {
 
         App.contracts.SupplyChain.deployed()
             .then(function (instance) {
-                console.log("Instance: " + instance);
                 var events = instance.allEvents(function (err, log) {
-                    console.log(log);
                     if (!err)
                         $("#ftc-events").append(
                             "<li>" + log.event + " - " + log.transactionHash + "</li>"
@@ -176,6 +155,5 @@ App = {
 $(function () {
     $(window).load(function () {
         App.init();
-        // App.manufactureItem();
     });
 });
