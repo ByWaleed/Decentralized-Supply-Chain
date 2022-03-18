@@ -34,7 +34,7 @@ class Search extends React.Component {
                             <td>01/01/2022 16:00</td>
                         </tr>
                         <tr>
-                            <b>Timeline</b>
+                            <td>Timeline</td>
                         </tr>
                         <tr>
                             <td>Manufactured</td>
