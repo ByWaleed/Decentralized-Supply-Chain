@@ -2,7 +2,7 @@ import React from 'react';
 import NewItem from './NewItem';
 import SingleItem from './SingleItem';
 
-class Items extends React.Component {
+export default class Items extends React.Component {
     render() {
         return (
             <div className="section">
@@ -35,5 +35,3 @@ class Items extends React.Component {
         );
     }
 }
-
-export default Items;
