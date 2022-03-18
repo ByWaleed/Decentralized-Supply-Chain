@@ -1,6 +1,6 @@
 import React from 'react';
 
-class ViewUserRole extends React.Component {
+export default class ViewUserRole extends React.Component {
     render() {
         return (
             <div>
@@ -20,5 +20,3 @@ class ViewUserRole extends React.Component {
         );
     }
 }
-
-export default ViewUserRole;

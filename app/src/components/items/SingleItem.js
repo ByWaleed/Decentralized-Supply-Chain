@@ -1,6 +1,6 @@
 import React from 'react';
 
-class SingleItem extends React.Component {
+export default class SingleItem extends React.Component {
     render() {
         return (
             <tr>
@@ -15,5 +15,3 @@ class SingleItem extends React.Component {
         );
     }
 }
-
-export default SingleItem;
