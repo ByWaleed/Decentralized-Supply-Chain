@@ -12,12 +12,12 @@ const drizzle = new Drizzle(drizzleOptions);
 
 const App = () => {
     return (
-        <div className="App">
+        <DrizzleContext.Provider drizzle={drizzle}>
             <Header />
             <Items />
             <Users />
             <Search />
-        </div>
+        </DrizzleContext.Provider>
     );
 }
 
