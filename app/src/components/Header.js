@@ -2,7 +2,7 @@ import React from 'react';
 import { DrizzleContext } from "@drizzle/react-plugin";
 import { newContextComponents } from "@drizzle/react-components";
 
-const { AccountData, ContractData, ContractForm } = newContextComponents;
+const { AccountData } = newContextComponents;
 
 export default class Header extends React.Component {
     render() {

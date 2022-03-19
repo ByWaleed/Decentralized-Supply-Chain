@@ -1,6 +1,10 @@
 import React from 'react';
 
 export default class NewItem extends React.Component {
+    manufactureItem() {
+        console.log("Clicked");
+    }
+
     render() {
         return (
             <div>
@@ -9,7 +13,7 @@ export default class NewItem extends React.Component {
                 <input type="text" placeholder="Name"required />
                 <input type="text" placeholder="Description" required />
                 <input type="number" placeholder="Price (eth)" required/>
-                <button>Manufacture</button>
+                <button onClick={this.manufactureItem}>Manufacture</button>
             </div>
         );
     }
