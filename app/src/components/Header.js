@@ -7,6 +7,8 @@ class Header extends Component {
                 <h1>OpenChain</h1>
 
                 <h1>Account Details</h1>
+                <p>Selected account is 0x000000...</p>
+                <p>Selected account balance is 0.000 Eth</p>
             </div>
         );
     }
