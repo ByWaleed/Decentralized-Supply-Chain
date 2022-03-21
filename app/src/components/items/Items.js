@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import NewItem from './NewItem';
 import ExistingItems from './ExistingItems';
 
-export default class Items extends React.Component {
+class Items extends Component {
     render() {
         return (
             <div className="section">
@@ -13,3 +13,5 @@ export default class Items extends React.Component {
         );
     }
 }
+
+export default Items

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-export default class NewItem extends React.Component {
+class NewItem extends Component {
     manufactureItem() {
         console.log("Clicked");
     }
@@ -18,3 +18,5 @@ export default class NewItem extends React.Component {
         );
     }
 }
+
+export default NewItem

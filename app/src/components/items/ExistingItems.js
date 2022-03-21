@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import SingleItem from './SingleItem';
 
-export default class ExistingItems extends React.Component {
+class ExistingItems extends Component {
     render() {
         return (
             <div>
@@ -28,3 +28,5 @@ export default class ExistingItems extends React.Component {
         );
     }
 }
+
+export default ExistingItems

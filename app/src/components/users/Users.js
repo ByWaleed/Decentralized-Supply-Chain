@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import RoleManagement from './RoleManagement';
 import ViewUserRole from './ViewUserRole';
 
-export default class Users extends React.Component {
+class Users extends React.Component {
     render() {
         return (
             <div className="section">
@@ -13,3 +13,5 @@ export default class Users extends React.Component {
         );
     }
 }
+
+export default Users
