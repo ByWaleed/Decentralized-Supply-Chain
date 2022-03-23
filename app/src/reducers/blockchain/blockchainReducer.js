@@ -4,6 +4,7 @@ const initialState = {
     provider: null,
     web3: null,
     account: null,
+    balance: null,
     contract: null,
     transactions: []
 };

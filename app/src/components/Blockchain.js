@@ -16,24 +16,16 @@ const Blockchain = (props) => {
             const accounts = await web3.eth.getAccounts()
             const contract = TruffleContract(SupplyChainJSON)
             contract.setProvider(provider)
+            const balance = await web3.eth.getBalance(accounts[0])
 
             props.actions.setupConnection({
                 provider: provider,
-                web3: web3,
+                web3: web3, // TODO: Gives error when stored in blockchain
                 account: accounts[0],
+                balance: web3.utils.fromWei(balance, 'ether'),
                 contract: contract,
                 transactions: []
             });
-
-            // this.setState({
-                // provider: provider,
-                // web3: web3,
-                // account: accounts[0],
-                // contract: contract,
-                // transactions: []
-            // })
-
-            // this.syncAllEvents(contract)
         }
 
         loadBlockchain();
@@ -78,13 +70,13 @@ const Blockchain = (props) => {
 
     return (
         <div>
-            <div>
-                <h1>Open Chain {props.blockchain.account}</h1>
-                {/* <p>Selected account: {this.state.account}</p> */}
-                {/* <button onClick={isManufacturer}>Is Manufacturer</button>
-                <button onClick={addManufacturer}>Add Manufacturer</button> */}
+            <div className="section">
+                <h1>Open Chain</h1>
+                <p>Selected account is {props.blockchain.account}</p>
+                <p>Selected account balance is {props.blockchain.balance} Eth
+                </p>
             </div>
-            <div>
+            <div className="section">
                 <h2>Blockchain Activity</h2>
                 <p>Transcations history here...</p>
             </div>
