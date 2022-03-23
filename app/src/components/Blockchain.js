@@ -30,9 +30,7 @@ const Blockchain = (props) => {
 
         const syncAccountChange = () => {
             window.ethereum.on('accountsChanged', function (accounts) {
-                props.actions.setupConnection({
-                    account: accounts[0]
-                })
+                loadBlockchain()
             });
         }
 
