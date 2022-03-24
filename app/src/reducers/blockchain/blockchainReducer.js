@@ -1,11 +1,9 @@
 import { SETUP_CONNECTION } from "../../actions/blockchainConnection/types";
 
 const initialState = {
-    provider: null,
-    web3: null,
+    contract: null,
     account: null,
     balance: null,
-    contract: null,
     transactions: []
 };
 

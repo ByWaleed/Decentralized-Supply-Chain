@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react"
+
 import Web3 from 'web3'
 import TruffleContract from "truffle-contract"
 import SupplyChainJSON from "../contracts/SupplyChain.json"
-import { connect } from "react-redux";
+
+import { connect } from "react-redux"
 import * as blockchainConnectionActions from "../actions/blockchainConnection/blockchainConnectionActions"
 
 const Blockchain = (props) => {
@@ -10,30 +12,46 @@ const Blockchain = (props) => {
     useEffect(() => {
 
         const loadBlockchain = async () => {
+            // Wallet
             const provider = Web3.givenProvider || "http://localhost:8545"
+
+            // Web3
             const web3 = new Web3(provider)
             const network = await web3.eth.net.getId()
             const accounts = await web3.eth.getAccounts()
-            const contract = TruffleContract(SupplyChainJSON)
-            contract.setProvider(provider)
-            contract.setNetwork(network)
-            const balance = await web3.eth.getBalance(accounts[0])
-            const deployedContract = await contract.deployed()
+            const account = accounts[0]
+            const balance = await web3.eth.getBalance(account)
+            const balanceEth = web3.utils.fromWei(balance, 'ether')
 
+            // Contract
+            const truffle = TruffleContract(SupplyChainJSON)
+            truffle.setProvider(provider)
+            truffle.setNetwork(network)
+            const contract = truffle.deployed().then(contract => {
+                syncAllEvents(contract)
+                return contract
+            })
+
+            // Redux Store
             props.actions.setupConnection({
-                provider: provider,
-                // web3: web3, // TODO: Gives error when stored in blockchain
-                account: accounts[0],
-                balance: web3.utils.fromWei(balance, 'ether'),
-                contract: deployedContract,
+                contract: contract,
+                account: account,
+                balance: balanceEth,
                 transactions: []
-            });
+            })
         }
 
         const syncAccountChange = () => {
             window.ethereum.on('accountsChanged', function (accounts) {
                 loadBlockchain()
-            });
+            })
+        }
+
+        const syncAllEvents = (contract) => {
+            console.log(contract)
+            contract.getPastEvents({ fromBlock: 0 }, (err, log) => {
+                if (!err) console.log(err, log)
+            })
         }
 
         loadBlockchain()
@@ -41,46 +59,13 @@ const Blockchain = (props) => {
 
         return () => {
 
-        };
-    }, [props.actions]);
-
-    // const isManufacturer = () => {
-    //     console.info("Is Manufacturer button clicked")
-
-    //     // User input
-    //     const account = "0x06F9a8A40196A92C7dcBe4B80d49a224e0a204d8"
-
-    //     state.contract.deployed()
-    //         .then(instance => {
-    //             return instance.isManufacturer(account)
-    //         })
-    //         .then(res => console.log(res))
-    //         .catch(err => console.error(err))
-    // }
-
-    // const addManufacturer = () => {
-    //     console.info("Add Manufacturer button clicked")
-
-    //     // User input
-    //     const account = "0x06F9a8A40196A92C7dcBe4B80d49a224e0a204d8"
-
-    //     state.contract.deployed()
-    //         .then(instance => {
-    //             return instance.addManufacturer(account, {
-    //                 from: state.account
-    //             })
-    //         })
-    //         .then(res => this.setState(prevState => (
-    //             this.state,
-    //             { transactions: [...this.state.transactions, res] }
-    //         )))
-    //         .catch(err => console.error(err))
-    // }
+        }
+    }, [props.actions])
 
     const [formData, setFormData] = useState({
         'role_userID': '0x06F9a8A40196A92C7dcBe4B80d49a224e0a204d8',
         'role_role': 'Manufacturer'
-    });
+    })
 
     const handleInputChange = (event) => {
         const { name, value, type, checked } = event.target
@@ -95,51 +80,42 @@ const Blockchain = (props) => {
     const assignRole = (event) => {
         event.preventDefault()
 
+        const contract = props.blockchain.contract
         const account = props.blockchain.account
+
         const userID = formData.role_userID
         const role = formData.role_role
 
-        let contract = props.blockchain.contract
-
-        contract.addManufacturer(userID, { from: account }).then(console.log)
-
-
-
-        // props.blockchain.contract.deployed().then(instance => {
-        //     instance.addManufacturer(userID, { from: account }).call((err, res) => {
-        //         console.log(err)
-        //         console.log(res)
-        //     })
-        // })
-
-        // props.blockchain.contract.deployed()
-        //     .then(instance => {
-        //         return instance.addManufacturer(
-        //             userID,
-        //             {
-        //                 from: props.blockchain.account
-        //             }
-        //         );
-        //     })
-        //     .then(result => {
-        //         console.log(result.logs[0].event);
-        //     })
-        //     .catch(err => {
-        //         console.log(err.message);
-        //     });
-
-        // switch (role) {
-        //     case "Manufacturer":
-
-        //     case "Distributor":
-
-        //     case "Supplier":
-
-        //     case "Retailer":
-
-        //     default:
-        //         console.error("Unkonwn role provided")
-        // }
+        switch (role) {
+            case "Manufacturer":
+                contract.addManufacturer(userID, { from: account })
+                    .then(response => console.log("Transaction completed successfully", response))
+                    .catch(error => console.log("Error occured while completing transaction", error))
+                break
+            case "Distributor":
+                contract.addDistributor(userID, { from: account })
+                    .then(response => console.log("Transaction completed successfully", response))
+                    .catch(error => console.log("Error occured while completing transaction", error))
+                break
+            case "Supplier":
+                contract.addSupplier(userID, { from: account })
+                    .then(response => console.log("Transaction completed successfully", response))
+                    .catch(error => console.log("Error occured while completing transaction", error))
+                break
+            case "Retailer":
+                contract.addRetailer(userID, { from: account })
+                    .then(response => console.log("Transaction completed successfully", response))
+                    .catch(error => console.log("Error occured while completing transaction", error))
+                break
+            case "Consumer":
+                contract.addConsumer(userID, { from: account })
+                    .then(response => console.log("Transaction completed successfully", response))
+                    .catch(error => console.log("Error occured while completing transaction", error))
+                break
+            default:
+                console.error("Unkonwn role provided")
+                break
+        }
     }
 
     return (
@@ -168,6 +144,7 @@ const Blockchain = (props) => {
                             <option value="Distributor">Distributor</option>
                             <option value="Supplier">Supplier</option>
                             <option value="Retailer">Retailer</option>
+                            <option value="Consumer">Consumer</option>
                         </select>
                         <br />
                         <button>Assign Role</button>
@@ -178,11 +155,15 @@ const Blockchain = (props) => {
     )
 }
 
+/**
+ * Redux Configuration
+ */
+
 const mapStateToProps = (state) => {
     return {
         blockchain: state.blockchain
-    };
-};
+    }
+}
 
 
 const mapDispatchToProps = (dispatch) => {
@@ -190,7 +171,7 @@ const mapDispatchToProps = (dispatch) => {
         actions: {
             setupConnection: (details) => dispatch(blockchainConnectionActions.setupConnection(details))
         },
-    };
-};
+    }
+}
 
-export default connect(mapStateToProps, mapDispatchToProps)(Blockchain);
+export default connect(mapStateToProps, mapDispatchToProps)(Blockchain)
