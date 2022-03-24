@@ -10,7 +10,6 @@ import * as blockchainConnectionActions from "../actions/blockchainConnection/bl
 const Blockchain = (props) => {
 
     useEffect(() => {
-
         const loadBlockchain = async () => {
             // Wallet
             const provider = Web3.givenProvider || "http://localhost:8545"
@@ -27,17 +26,16 @@ const Blockchain = (props) => {
             const truffle = TruffleContract(SupplyChainJSON)
             truffle.setProvider(provider)
             truffle.setNetwork(network)
-            const contract = truffle.deployed().then(contract => {
-                syncAllEvents(contract)
-                return contract
-            })
+            truffle.deployed().then(contract => {
+                // Setup Redux Store
+                props.actions.setupConnection({
+                    contract: contract,
+                    account: account,
+                    balance: balanceEth,
+                    transactions: []
+                })
 
-            // Redux Store
-            props.actions.setupConnection({
-                contract: contract,
-                account: account,
-                balance: balanceEth,
-                transactions: []
+                syncAllEvents(contract)
             })
         }
 
@@ -57,9 +55,7 @@ const Blockchain = (props) => {
         loadBlockchain()
         syncAccountChange()
 
-        return () => {
-
-        }
+        return () => { }
     }, [props.actions])
 
     const [formData, setFormData] = useState({
