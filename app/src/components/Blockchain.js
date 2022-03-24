@@ -46,7 +46,6 @@ const Blockchain = (props) => {
         }
 
         const syncAllEvents = (contract) => {
-            console.log(contract)
             contract.getPastEvents({ fromBlock: 0 }, (err, log) => {
                 if (!err) console.log(err, log)
             })
@@ -59,8 +58,14 @@ const Blockchain = (props) => {
     }, [props.actions])
 
     const [formData, setFormData] = useState({
-        'role_userID': '0x06F9a8A40196A92C7dcBe4B80d49a224e0a204d8',
-        'role_role': 'Manufacturer'
+        'role_userID': '',
+        'role_role': 'Manufacturer',
+    })
+
+    const [outputData, setOutputData] = useState({
+        'role_assign': null,
+        'role_check': null,
+        'role_unassign': null,
     })
 
     const handleInputChange = (event) => {
@@ -73,6 +78,44 @@ const Blockchain = (props) => {
         })
     }
 
+    const checkRole = (event) => {
+        event.preventDefault()
+
+        const contract = props.blockchain.contract
+        const account = props.blockchain.account
+
+        const userID = formData.role_userID
+        const role = formData.role_role
+
+        const getRoleCall = (role) => {
+            if (role == "Manufacturer")
+                return contract.isManufacturer(userID, { from: account })
+            else if (role == "Distributor")
+                return contract.isDistributor(userID, { from: account })
+            else if (role == "Retailer")
+                return contract.isRetailer(userID, { from: account })
+            else if (role == "Consumer")
+                return contract.isConsumer(userID, { from: account })
+            else
+                throw ("Unkonwn role selected " + role)
+        }
+
+        getRoleCall(role)
+            .then(response => {
+                console.log(response)
+                // setOutputData(prevOutputData => {
+                //     return {
+                //         ...prevOutputData,
+                //         "role_isAssigned": response
+                //     }
+                // })
+            })
+            .catch(error => {
+                // TODO: Gracefully show error
+                console.error("Error occured while completing transaction", error)
+            })
+    }
+
     const assignRole = (event) => {
         event.preventDefault()
 
@@ -82,36 +125,59 @@ const Blockchain = (props) => {
         const userID = formData.role_userID
         const role = formData.role_role
 
-        switch (role) {
-            case "Manufacturer":
-                contract.addManufacturer(userID, { from: account })
-                    .then(response => console.log("Transaction completed successfully", response))
-                    .catch(error => console.log("Error occured while completing transaction", error))
-                break
-            case "Distributor":
-                contract.addDistributor(userID, { from: account })
-                    .then(response => console.log("Transaction completed successfully", response))
-                    .catch(error => console.log("Error occured while completing transaction", error))
-                break
-            case "Supplier":
-                contract.addSupplier(userID, { from: account })
-                    .then(response => console.log("Transaction completed successfully", response))
-                    .catch(error => console.log("Error occured while completing transaction", error))
-                break
-            case "Retailer":
-                contract.addRetailer(userID, { from: account })
-                    .then(response => console.log("Transaction completed successfully", response))
-                    .catch(error => console.log("Error occured while completing transaction", error))
-                break
-            case "Consumer":
-                contract.addConsumer(userID, { from: account })
-                    .then(response => console.log("Transaction completed successfully", response))
-                    .catch(error => console.log("Error occured while completing transaction", error))
-                break
-            default:
-                console.error("Unkonwn role provided")
-                break
+        const getRoleCall = (role) => {
+            if (role == "Manufacturer")
+                return contract.addManufacturer(userID, { from: account })
+            else if (role == "Distributor")
+                return contract.addDistributor(userID, { from: account })
+            else if (role == "Retailer")
+                return contract.addRetailer(userID, { from: account })
+            else if (role == "Consumer")
+                return contract.addConsumer(userID, { from: account })
+            else
+                throw ("Unkonwn role selected " + role)
         }
+
+        getRoleCall(role)
+            .then(response => {
+                console.log(response)
+            })
+            .catch(error => {
+                // TODO: Gracefully show error
+                console.error("Error occured while completing transaction", error)
+            })
+    }
+
+    const unassignRole = (event) => {
+        event.preventDefault()
+
+        const contract = props.blockchain.contract
+        const account = props.blockchain.account
+
+        const userID = formData.role_userID
+        const role = formData.role_role
+
+        const getRoleCall = (role) => {
+            if (role == "Manufacturer")
+                return contract.renounceManufacturer({ from: account })
+            else if (role == "Distributor")
+                return contract.renounceDistributor({ from: account })
+            else if (role == "Retailer")
+                return contract.renounceRetailer({ from: account })
+            else if (role == "Consumer")
+                return contract.renounceConsumer({ from: account })
+            else
+                throw ("Unkonwn role selected " + role)
+        }
+
+        getRoleCall(role)
+            .then(response => {
+                console.log(response)
+            })
+            .catch(error => {
+                // TODO: Gracefully show error
+                console.error("Error occured while completing transaction", error)
+            })
     }
 
     return (
@@ -123,27 +189,35 @@ const Blockchain = (props) => {
                 </p>
             </div>
             <div className="section">
-                <h1>Users</h1>
+                <h1>Roles Managements</h1>
                 <div>
-                    <h2>Assign Role</h2>
-                    <form onSubmit={assignRole}>
+                    <form onSubmit={event => event.preventDefault()}>
+                        <label htmlFor="role_userID">User ID </label>
                         <input
                             type="text"
                             placeholder="User ID"
+                            id="role_userID"
                             name="role_userID"
                             value={formData.role_userID}
                             onChange={handleInputChange}
                             required
                         />
-                        <select name="role_role" onChange={handleInputChange} value={formData.role_role}>
+                        <br />
+                        <label htmlFor="role_role">Role </label>
+                        <select
+                            id="role_role"
+                            name="role_role"
+                            onChange={handleInputChange}
+                            value={formData.role_role}>
                             <option value="Manufacturer">Manufacturer</option>
                             <option value="Distributor">Distributor</option>
-                            <option value="Supplier">Supplier</option>
                             <option value="Retailer">Retailer</option>
                             <option value="Consumer">Consumer</option>
                         </select>
                         <br />
-                        <button>Assign Role</button>
+                        <button onClick={assignRole}>Assign Role</button>
+                        <button onClick={checkRole}>Check Role</button>
+                        <button onClick={unassignRole}>Unassign Role</button>
                     </form>
                 </div>
             </div>
