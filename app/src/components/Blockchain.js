@@ -62,10 +62,10 @@ const Blockchain = (props) => {
     const [formData, setFormData] = useState({
         'role_userID': '',
         'role_role': 'Manufacturer',
-        'item_id': '',
-        'item_name': '',
-        'item_price': '',
-        'item_description': '',
+        'item_id': '1',
+        'item_name': 'Poco F2 Pro',
+        'item_price': '300',
+        'item_description': 'MI flagship smart phone release in 2019.',
     })
 
     const [outputData, setOutputData] = useState({
@@ -202,13 +202,13 @@ const Blockchain = (props) => {
             item_id,
             item_name,
             item_price,
-            item_description } = formData.item
+            item_description } = formData
 
-        contract.renounceManufacturer(
+        contract.manufactureItem(
             item_id,
             item_name,
-            item_price,
             item_description,
+            item_price,
             { from: account }
         )
             .then(response => {
