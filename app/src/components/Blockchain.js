@@ -60,19 +60,19 @@ const Blockchain = (props) => {
     }, [props.actions])
 
     const [formData, setFormData] = useState({
-        'role_userID': '0xfF0D79b90A5428eB68Fe6b9FF0D9f96A035F2dD9',
+        'role_userID': '',
         'role_role': 'Manufacturer',
-        'item_id': 1,
+        'item_id': '',
         'item_name': '',
-        'item_price': 1,
+        'item_price': '',
         'item_description': '',
-        'item_manufacturer': ''
     })
 
     const [outputData, setOutputData] = useState({
         'role_assign': null,
         'role_check': null,
         'role_unassign': null,
+        'manufacture_item': null
     })
 
     const handleInputChange = (event) => {
@@ -194,6 +194,35 @@ const Blockchain = (props) => {
             })
     }
 
+    const manufactureItem = (event) => {
+        event.preventDefault()
+
+        const { contract, account } = props.blockchain
+        const {
+            item_id,
+            item_name,
+            item_price,
+            item_description } = formData.item
+
+        contract.renounceManufacturer(
+            item_id,
+            item_name,
+            item_price,
+            item_description,
+            { from: account }
+        )
+            .then(response => {
+                if (response.receipt.status)
+                    setOutputData({ manufacture_item: "Item manufactured successfully ✅" })
+                else
+                    setOutputData({ manufacture_item: "Error occured while manufacturing item  ❌" })
+            })
+            .catch(error => {
+                // TODO: Gracefully show error
+                console.error("Error occured while completing transaction", error)
+            })
+    }
+
     return (
         <div>
             <div className="section">
@@ -239,7 +268,7 @@ const Blockchain = (props) => {
                             <button onClick={assignRole}>Assign Role</button>
                             {outputData.role_assign != null ? outputData.role_assign : ''}
                         </p>
-                        <p>You can only renounce your roles (not for annother account)</p>
+                        <p>You can only renounce your roles (not for annother account).</p>
                         <p>
                             <button onClick={unassignRole}>Unassign Role</button>
                             {outputData.role_unassign != null ? outputData.role_unassign : ''}
@@ -252,11 +281,22 @@ const Blockchain = (props) => {
             {/* Item Managemnet */}
             <div className="section">
                 <h1>Manufacture Item</h1>
-                <form onSubmit={event => event.preventDefault()}>
-                    <label htmlFor="role_userID">Item Name </label>
+                <form onSubmit={manufactureItem}>
+                    <label htmlFor="item_id">ID </label>
+                    <input
+                        type="number"
+                        placeholder="ID"
+                        id="item_id"
+                        name="item_id"
+                        value={formData.item_id}
+                        onChange={handleInputChange}
+                        required
+                    />
+                    <br />
+                    <label htmlFor="item_name">Name </label>
                     <input
                         type="text"
-                        placeholder="Item Name"
+                        placeholder="Name"
                         id="item_name"
                         name="item_name"
                         value={formData.item_name}
@@ -264,6 +304,30 @@ const Blockchain = (props) => {
                         required
                     />
                     <br />
+                    <label htmlFor="item_description">Description </label>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        id="item_description"
+                        name="item_description"
+                        value={formData.item_description}
+                        onChange={handleInputChange}
+                        required
+                    />
+                    <br />
+                    <label htmlFor="item_price">Price </label>
+                    <input
+                        type="number"
+                        placeholder="Price"
+                        id="item_price"
+                        name="item_price"
+                        value={formData.item_price}
+                        onChange={handleInputChange}
+                        required
+                    />
+                    <br />
+                    <button>Manufacture</button>
+                    <p>{outputData.manufacture_item != null ? outputData.manufacture_item : ''}</p>
                 </form>
             </div>
 

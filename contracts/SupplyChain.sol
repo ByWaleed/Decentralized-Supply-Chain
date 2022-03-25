@@ -24,12 +24,12 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
 
     struct Item {
         uint256 upc;
+        string name;
+        string description;
+        uint256 price;
         address ownerID;
-        uint256 productPrice;
         State itemState;
-        address originManufacturerID;
-        string originManufacturerName;
-        string originManufacturerInformation;
+        address manufacturerID;
         address distributorID;
         address retailerID;
         address consumerID;
@@ -55,19 +55,18 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
 
     function manufactureItem(
         uint256 _upc,
-        uint256 _price,
-        address _originManufacturerID,
-        string memory _originManufacturerName,
-        string memory _originManufacturerInformation
+        string memory _name,
+        string memory _description,
+        uint256 _price
     ) public onlyManufacturer {
         items[_upc] = Item({
             upc: _upc,
-            ownerID: _originManufacturerID, // dynamically assign wallet address of the caller
-            productPrice: _price,
+            name: _name,
+            description: _description,
+            price: _price,
+            ownerID: msg.sender,
             itemState: State.Manufactured,
-            originManufacturerID: _originManufacturerID,
-            originManufacturerName: _originManufacturerName,
-            originManufacturerInformation: _originManufacturerInformation,
+            manufacturerID: msg.sender,
             distributorID: address(0),
             retailerID: address(0),
             consumerID: address(0)
@@ -94,7 +93,7 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         onlyManufacturer
     {
         items[_upc].itemState = State.ForSale;
-        items[_upc].productPrice = _price;
+        items[_upc].price = _price;
 
         emit ForSale(_upc);
     }
@@ -103,7 +102,7 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         public
         payable
         forSale(_upc)
-        paidEnough(items[_upc].productPrice)
+        paidEnough(items[_upc].price)
         checkValue(_upc)
         onlyDistributor
     {
@@ -111,8 +110,8 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
         items[_upc].itemState = State.Sold;
         items[_upc].distributorID = msg.sender;
 
-        uint256 price = items[_upc].productPrice;
-        payable(items[_upc].originManufacturerID).transfer(price);
+        uint256 price = items[_upc].price;
+        payable(items[_upc].manufacturerID).transfer(price);
 
         emit Sold(_upc);
     }
@@ -153,8 +152,8 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
             uint256 price,
             uint256 state,
             address manufacturerID,
-            string memory manufacturerName,
-            string memory manufacturerInformation,
+            string memory name,
+            string memory description,
             address distributorID,
             address retailerID,
             address consumerID
@@ -162,15 +161,14 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
     {
         UPC = items[_upc].upc;
         owner = items[_upc].ownerID;
-        price = items[_upc].productPrice;
+        price = items[_upc].price;
         state = uint256(items[_upc].itemState);
-        manufacturerID = items[_upc].originManufacturerID;
-        manufacturerName = items[_upc].originManufacturerName;
-        manufacturerInformation = items[_upc].originManufacturerInformation;
+        manufacturerID = items[_upc].manufacturerID;
+        name = items[_upc].name;
+        description = items[_upc].description;
         distributorID = items[_upc].distributorID;
         retailerID = items[_upc].retailerID;
         consumerID = items[_upc].consumerID;
-
 
         return (
             UPC,
@@ -178,8 +176,8 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
             price,
             state,
             manufacturerID,
-            manufacturerName,
-            manufacturerInformation,
+            name,
+            description,
             distributorID,
             retailerID,
             consumerID
@@ -200,7 +198,7 @@ contract SupplyChain is Ownable, Consumer, Distributor, Manufacturer, Retailer {
 
     modifier checkValue(uint256 _upc) {
         _;
-        uint256 _price = items[_upc].productPrice;
+        uint256 _price = items[_upc].price;
         uint256 amountToReturn = msg.value - _price;
         payable(items[_upc].consumerID).transfer(amountToReturn);
     }
