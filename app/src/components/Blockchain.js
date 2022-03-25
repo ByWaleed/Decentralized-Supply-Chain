@@ -219,7 +219,11 @@ const Blockchain = (props) => {
                         <br />
                         <button onClick={assignRole}>Assign Role</button>
                         <button onClick={checkRole}>Check Role</button>
-                        <button onClick={unassignRole}>Unassign Role</button>
+                        <p>
+                            <button onClick={unassignRole}>Unassign Role</button>
+                             You can only renounce your roles (not for annother account)
+                        </p>
+
                     </form>
                 </div>
             </div>
@@ -227,8 +231,8 @@ const Blockchain = (props) => {
                 <h1>Transactions</h1>
                 {props.blockchain.transactions.length == 0 && <p>No recent transactions to show.</p>}
                 <ul>
-                    {props.blockchain.transactions.map((transaction) => (
-                        <li key={transaction.id}>
+                    {props.blockchain.transactions.map((transaction, index) => (
+                        <li key={index}>
                             {transaction.event} : {transaction.transactionHash}
                         </li>
                     ))}

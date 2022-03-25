@@ -3,6 +3,16 @@
   margin: 2rem;
 }
 
+input, select {
+    margin: 1em 1em 1em 0;
+    padding: 2px;
+}
+
+button {
+    margin: 0.25em 1em 0.25em 0;
+    padding: 5px 12px 5px 12px;
+}
+
 .section {
   text-align: left;
   max-width: 720px;
