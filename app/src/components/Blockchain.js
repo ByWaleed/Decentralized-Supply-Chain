@@ -190,6 +190,8 @@ const Blockchain = (props) => {
                 <p>Selected account balance is {props.blockchain.balance} Eth
                 </p>
             </div>
+
+            {/* Roles Management */}
             <div className="section">
                 <h1>Roles Managements</h1>
                 <div>
@@ -221,12 +223,32 @@ const Blockchain = (props) => {
                         <button onClick={checkRole}>Check Role</button>
                         <p>
                             <button onClick={unassignRole}>Unassign Role</button>
-                             You can only renounce your roles (not for annother account)
+                            You can only renounce your roles (not for annother account)
                         </p>
 
                     </form>
                 </div>
             </div>
+
+            {/* Item Managemnet */}
+            <div className="section">
+                <h1>Manufacture Item</h1>
+                <form onSubmit={event => event.preventDefault()}>
+                    <label htmlFor="role_userID">Item Name </label>
+                    <input
+                        type="text"
+                        placeholder="Item Name"
+                        id="role_userID"
+                        name="role_userID"
+                        value={formData.role_userID}
+                        onChange={handleInputChange}
+                        required
+                    />
+                    <br/>
+                </form>
+            </div>
+
+            {/* Transactions */}
             <div className="section">
                 <h1>Transactions</h1>
                 {props.blockchain.transactions.length == 0 && <p>No recent transactions to show.</p>}
