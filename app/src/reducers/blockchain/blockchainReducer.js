@@ -1,4 +1,4 @@
-import { SETUP_CONNECTION } from "../../actions/blockchainConnection/types";
+import { SETUP_CONNECTION, ADD_TRANSACTION } from "../../actions/blockchainConnection/types";
 
 const initialState = {
     contract: null,
@@ -7,12 +7,20 @@ const initialState = {
     transactions: []
 };
 
-export default function blockchainReducer (state = initialState, action) {
+export default function blockchainReducer(state = initialState, action) {
     switch (action.type) {
         case SETUP_CONNECTION:
             return {
                 ...state,
                 ...action.payload
+            }
+        case ADD_TRANSACTION:
+            return {
+                ...state,
+                transactions: [
+                    ...state.transactions,
+                    action.payload
+                ]
             }
         default:
             return state;

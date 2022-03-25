@@ -46,8 +46,10 @@ const Blockchain = (props) => {
         }
 
         const syncAllEvents = (contract) => {
-            contract.getPastEvents({ fromBlock: 0 }, (err, log) => {
-                if (!err) console.log(err, log)
+            contract.allEvents((err, log) => {
+                if (!err) {
+                    props.actions.addTransaction(log)
+                }
             })
         }
 
@@ -221,6 +223,17 @@ const Blockchain = (props) => {
                     </form>
                 </div>
             </div>
+            <div className="section">
+                <h1>Transactions</h1>
+                {props.blockchain.transactions.length == 0 && <p>No recent transactions to show.</p>}
+                <ul>
+                    {props.blockchain.transactions.map((transaction) => (
+                        <li key={transaction.id}>
+                            {transaction.event} : {transaction.transactionHash}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     )
 }
@@ -235,11 +248,11 @@ const mapStateToProps = (state) => {
     }
 }
 
-
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: {
-            setupConnection: (details) => dispatch(blockchainConnectionActions.setupConnection(details))
+            setupConnection: (details) => dispatch(blockchainConnectionActions.setupConnection(details)),
+            addTransaction: (details) => dispatch(blockchainConnectionActions.addTransaction(details))
         },
     }
 }
