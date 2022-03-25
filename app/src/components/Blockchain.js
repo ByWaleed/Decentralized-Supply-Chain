@@ -60,8 +60,13 @@ const Blockchain = (props) => {
     }, [props.actions])
 
     const [formData, setFormData] = useState({
-        'role_userID': '',
+        'role_userID': '0xfF0D79b90A5428eB68Fe6b9FF0D9f96A035F2dD9',
         'role_role': 'Manufacturer',
+        'item_id': 1,
+        'item_name': '',
+        'item_price': 1,
+        'item_description': '',
+        'item_manufacturer': ''
     })
 
     const [outputData, setOutputData] = useState({
@@ -104,13 +109,10 @@ const Blockchain = (props) => {
 
         getRoleCall(role)
             .then(response => {
-                console.log(response)
-                // setOutputData(prevOutputData => {
-                //     return {
-                //         ...prevOutputData,
-                //         "role_isAssigned": response
-                //     }
-                // })
+                if (response == true)
+                    setOutputData({ role_check: role + " ✅" })
+                else
+                    setOutputData({ role_check: role + " ❌" })
             })
             .catch(error => {
                 // TODO: Gracefully show error
@@ -140,9 +142,14 @@ const Blockchain = (props) => {
                 throw ("Unkonwn role selected " + role)
         }
 
+        // TODO: Confirm user `does not` the role to be assigned
+
         getRoleCall(role)
             .then(response => {
-                console.log(response)
+                if (response.receipt.status)
+                    setOutputData({ role_assign: "Role assigned successful ✅" })
+                else
+                    setOutputData({ role_assign: "Error occured while assigning role  ❌" })
             })
             .catch(error => {
                 // TODO: Gracefully show error
@@ -172,9 +179,14 @@ const Blockchain = (props) => {
                 throw ("Unkonwn role selected " + role)
         }
 
+        // TODO: Confirm user `has` the role to be unassigned
+
         getRoleCall(role)
             .then(response => {
-                console.log(response)
+                if (response.receipt.status)
+                    setOutputData({ role_unassign: "Role unassigned successful ✅" })
+                else
+                    setOutputData({ role_unassign: "Error occured while assigning role  ❌" })
             })
             .catch(error => {
                 // TODO: Gracefully show error
@@ -219,11 +231,18 @@ const Blockchain = (props) => {
                             <option value="Consumer">Consumer</option>
                         </select>
                         <br />
-                        <button onClick={assignRole}>Assign Role</button>
-                        <button onClick={checkRole}>Check Role</button>
+                        <p>
+                            <button onClick={checkRole}>Check Role</button>
+                            {outputData.role_check != null ? outputData.role_check : ''}
+                        </p>
+                        <p>
+                            <button onClick={assignRole}>Assign Role</button>
+                            {outputData.role_assign != null ? outputData.role_assign : ''}
+                        </p>
+                        <p>You can only renounce your roles (not for annother account)</p>
                         <p>
                             <button onClick={unassignRole}>Unassign Role</button>
-                            You can only renounce your roles (not for annother account)
+                            {outputData.role_unassign != null ? outputData.role_unassign : ''}
                         </p>
 
                     </form>
@@ -238,13 +257,13 @@ const Blockchain = (props) => {
                     <input
                         type="text"
                         placeholder="Item Name"
-                        id="role_userID"
-                        name="role_userID"
-                        value={formData.role_userID}
+                        id="item_name"
+                        name="item_name"
+                        value={formData.item_name}
                         onChange={handleInputChange}
                         required
                     />
-                    <br/>
+                    <br />
                 </form>
             </div>
 
