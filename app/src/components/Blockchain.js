@@ -60,12 +60,18 @@ const Blockchain = (props) => {
     }, [props.actions])
 
     const [formData, setFormData] = useState({
+        // Role Management
         'role_userID': '',
         'role_role': 'Manufacturer',
+        // Manufacture Item
         'item_id': '1',
         'item_name': 'Poco F2 Pro',
         'item_price': '300',
         'item_description': 'MI flagship smart phone release in 2019.',
+        // Search Item
+        'search_id': '',
+        'search_found': null,
+        'search_item': null
     })
 
     const [outputData, setOutputData] = useState({
@@ -223,6 +229,29 @@ const Blockchain = (props) => {
             })
     }
 
+    const searchItem = (event) => {
+        event.preventDefault()
+
+        const { contract, account } = props.blockchain
+        const { search_id } = formData
+
+        contract.fetchItem(search_id, { from: account })
+            .then(response => {
+                const emptyAddress = "0x0000000000000000000000000000000000000000"
+                if (response.owner != emptyAddress)
+                    setOutputData({
+                        search_found: true,
+                        search_item: response
+                    })
+                else
+                    setOutputData({ search_found: false })
+            })
+            .catch(error => {
+                // TODO: Gracefully show error
+                console.error("Error occured while completing transaction", error)
+            })
+    }
+
     return (
         <div>
             <div className="section">
@@ -282,7 +311,7 @@ const Blockchain = (props) => {
             <div className="section">
                 <h1>Manufacture Item</h1>
                 <form onSubmit={manufactureItem}>
-                    <label htmlFor="item_id">ID </label>
+                    <label htmlFor="item_id">SKU </label>
                     <input
                         type="number"
                         placeholder="ID"
@@ -328,6 +357,61 @@ const Blockchain = (props) => {
                     <br />
                     <button>Manufacture</button>
                     <p>{outputData.manufacture_item != null ? outputData.manufacture_item : ''}</p>
+                </form>
+            </div>
+            <div className="section">
+                <h1>Search Item</h1>
+                <form onSubmit={searchItem}>
+                    <label>Item SKU </label>
+                    <input
+                        type="number"
+                        placeholder="SKU"
+                        id="search_id"
+                        name="search_id"
+                        value={formData.search_id}
+                        onChange={handleInputChange}
+                        required
+                    />
+                    <button>Search</button>
+                    {outputData.search_found == false && <p>No item found 😕</p>}
+                    {outputData.search_found && (
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><strong>UPC</strong></td>
+                                    <td>{outputData.search_item.UPC.words[0]}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Name</strong></td>
+                                    <td>{outputData.search_item.name}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td>{outputData.search_item.description}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Price</strong></td>
+                                    <td>£{outputData.search_item.price.words[0]}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Manufacturer ID</strong></td>
+                                    <td>{outputData.search_item.manufacturerID}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Distributor ID</strong></td>
+                                    <td>{outputData.search_item.distributor}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Supplier ID</strong></td>
+                                    <td>{outputData.search_item.supplierID}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Retailer ID</strong></td>
+                                    <td>{outputData.search_item.retailerID}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    )}
                 </form>
             </div>
 
