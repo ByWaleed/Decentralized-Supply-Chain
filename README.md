@@ -6,6 +6,8 @@ Etherem blockchain and Smart Contracts are used, with the Solidity programming l
 
 Frontend is built using React JS, Redux and Tailwind CSS.
 
+![Poster](./docs/poster.jpg)
+
 # Installation
 1. Clone repository: ```git clone https://github.com/ByWaleed/Decentralized-Supply-Chain.git```
 
