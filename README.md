@@ -1,3 +1,11 @@
+# Decentralised Supply Chain Management System
+
+A proof-of-concept application, which demonstrates how a **decentralised**, **automated** and **distributed** Supply Chain Management (SCM) system can be built using the Blockchain technology.
+
+Etherem blockchain and Smart Contracts are used, with the Solidity programming language and Ganache/Truffle framework.
+
+Frontend is built using React JS, Redux and Tailwind CSS.
+
 # Installation
 1. Clone repository: ```git clone https://github.com/ByWaleed/Decentralized-Supply-Chain.git```
 
