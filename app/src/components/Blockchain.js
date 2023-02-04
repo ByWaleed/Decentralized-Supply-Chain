@@ -15,12 +15,24 @@ const Blockchain = (props) => {
     useEffect(() => {
         const loadBlockchain = async () => {
             // Wallet
-            const provider = Web3.givenProvider || "http://localhost:8545"
+            const provider = Web3.givenProvider || window.ethereum || window.web3.currentProvider;
+
+            // Check if wallet is installed.
+            if (!provider) {
+                console.warn("Couldn't retrieve any wallet connected to the browser. Using default 'http://localhost:8545'");
+                provider = "http://localhost:8545";
+            }
 
             // Web3
-            const web3 = new Web3(provider)
-            const network = await web3.eth.net.getId()
+            const web3 = new Web3(provider);
+
+            // Check if wallet is accessible ( access granted by user ).
             const accounts = await web3.eth.getAccounts()
+            if (accounts.length == 0) {
+                throw "Couldn't retrieve any account from the wallet. Please grant access to the wallet."
+            };
+
+            const network = await web3.eth.net.getId()
             const account = accounts[0]
             const balance = await web3.eth.getBalance(account)
             const balanceEth = web3.utils.fromWei(balance, 'ether')
